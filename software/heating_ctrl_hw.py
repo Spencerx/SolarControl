@@ -13,6 +13,9 @@ try:
 except:
 	print("configuration-file not found!\n")
 
+SolarPumpRunning = False
+SwitchOnTime = 0
+
 spi = spidev.SpiDev()
 spi.open(0, 0)
 
@@ -88,11 +91,22 @@ while True:
 	print("T8 = %2.1f, T9 = %2.1f, T10 = %2.1f, T11 = %2.1f" % (T8, T9, T10, T11))
 	postData(TempLog, 1)
 	#postDataRemoteServer(TempLog,27)
-	if Relais == 0:
-		#setRelais0 ()
-		Relais = 1
+
+
+	if (T6>80):  #activ cooling
+		SolarPumpRunning = True
+		setRelais0()
+		SwitchOnTime = 0
 	else:
-		#resetRelais0 ()
-		Relais = 0
-	time.sleep (5)
+		if SolarPumpRunning:
+			SwitchOnTime += 30
+			if (T9>T8)and(SwitchOnTime>300):
+				SolarPumpRunning = False
+				resetRelais0()
+				SwitchOnTime = 0
+		elif (T7 > (T6 + 4)):
+			SolarPumpRunning = True
+			setRelais0()
+			
+	time.sleep (30)
 	
