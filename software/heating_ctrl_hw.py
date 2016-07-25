@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 config = configparser.ConfigParser()
 try:
-	config.read('../config.txt')
+	config.read('../../config.txt')
 except:
 	print("configuration-file not found!\n")
 
