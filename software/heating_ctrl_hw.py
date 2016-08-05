@@ -9,7 +9,7 @@ from urllib.request import urlopen
 
 config = configparser.ConfigParser()
 try:
-	config.read('../config.txt')
+	config.read('/home/pi/Documents/config.txt')
 except:
 	print("configuration-file not found!\n")
 
@@ -107,6 +107,6 @@ while True:
 		elif (T7 > (T6 + 4)):
 			SolarPumpRunning = True
 			setRelais0()
-			
+
 	time.sleep (30)
 	
