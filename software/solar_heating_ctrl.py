@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 
-import heating_ctrl_hw
+import heating_ctrl_hw as hardware
 
-hw = CtrlHardware()
+hw = hardware.CtrlHardware()
 
 SolarPumpRunning = False
 SwitchOnTime = 0
