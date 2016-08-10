@@ -13,83 +13,97 @@ try:
 except:
 	print("configuration-file not found!\n")
 
-SolarPumpRunning = False
-SwitchOnTime = 0
-
-spi = spidev.SpiDev()
-spi.open(0, 0)
-
 adc_0degrees = 213
 adc_100degrees = 645
 
-#sensor_id: 0..15
-def readTemp (sensor_id):   
-	if sensor_id >= 0 and sensor_id < 8:
-		#set output-latch of GPB3 low, GPB4 high
-		mux_byte = format(16+sensor_id, '#04x')
-		os.system('i2cset -y 1 0x24 0x15 '+mux_byte) 
-	elif sensor_id >7 and sensor_id < 16:
-		#set output-latch of GPB3 high, GPB4 low
-		mux_byte = format(sensor_id, '#04x')
-		os.system('i2cset -y 1 0x24 0x15 '+mux_byte) 
-	#set pins 0..4 of register B as output
-	os.system('i2cset -y 1 0x24 0x01 0xE0') 
-	time.sleep (0.1)
-	adc_result = spi.xfer([0x01, 0x80, 0x00])
-	value = 256*adc_result[1] + adc_result[2]
-	Temp = 100.0*(value - adc_0degrees)/(adc_100degrees - adc_0degrees)
-	return Temp
 
-def setOutput (pin=0, state=0):
-	os.system('i2cset -y 1 0x20 0x15 ' + format(output, '#04x'))  
-	os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
+class CtrlHardware():
+	_output = 0xff
+	spi = spidev.SpiDev()
+	spi.open(0, 0)
 
+	#sensor_id: 0..15
+	def readTemp (self, sensor_id):
+		if sensor_id >= 0 and sensor_id < 8:
+			#set output-latch of GPB3 low, GPB4 high
+			mux_byte = format(16+sensor_id, '#04x')
+			os.system('i2cset -y 1 0x24 0x15 '+mux_byte)
+		elif sensor_id >7 and sensor_id < 16:
+			#set output-latch of GPB3 high, GPB4 low
+			mux_byte = format(sensor_id, '#04x')
+			os.system('i2cset -y 1 0x24 0x15 '+mux_byte)
+		#set pins 0..4 of register B as output
+		os.system('i2cset -y 1 0x24 0x01 0xE0')
+		time.sleep (0.1)
+		adc_result = self.spi.xfer([0x01, 0x80, 0x00])
+		value = 256*adc_result[1] + adc_result[2]
+		Temp = 100.0*(value - adc_0degrees)/(adc_100degrees - adc_0degrees)
+		return Temp
 
-def postData (data, node):
-	rw_apikey = config['local_emon']['rw_apikey']
-	url = 'http://localhost/emoncms/input/post.json?node='+str(1)+'&json={'+data+'}&apikey='+rw_apikey
-	answer = urlopen(url)
-	#print(answer)
+	def initOutputs (self):
+		self._output = 0xff
+		os.system('i2cset -y 1 0x20 0x15 0xFF')
+		os.system('i2cset -y 1 0x20 0x01 0x00')  # set pins 0..7 of register B as output
 
-def postDataRemoteServer (data, node):
-	url = 'xxxxxxxxxxxxxxx/emoncms/input/post.json?node='+str(1)+'&json={'+data+'}&apikey=xxxxxxxxxxxxxx'
-	answer = urlopen(url)
-	#print(answer)
+	def setOutput (self):
+		os.system('i2cset -y 1 0x20 0x15 ' + format(output, '#04x'))
+		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
+	def changeOutput (self, pin=0, state=0):
+		if (state == 0):
+			self._output = self._output | (2**pin)
+		else:
+			self._output = self._output & (~(2**pin))
+		os.system('i2cset -y 1 0x20 0x15 ' + format(output, '#04x'))
+		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
-def setRelais0 ():
-	#os.system('i2cset -y 1 0x24 0x15 0x10')  #set output-latch of GPB4 high
-	#os.system('i2cset -y 1 0x24 0x01 0xE0')  #set pins 0..4 of register B as output
-	os.system('i2cset -y 1 0x20 0x15 0xFE')  
-	os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
+	def postData (self, data, node):
+		rw_apikey = config['local_emon']['rw_apikey']
+		url = 'http://localhost/emoncms/input/post.json?node='+str(1)+'&json={'+data+'}&apikey='+rw_apikey
+		answer = urlopen(url)
+		#print(answer)
 
-def resetRelais0 ():
-	os.system('i2cset -y 1 0x20 0x15 0xFF')  
-	os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
+	def postDataRemoteServer (self, data, node):
+		url = 'xxxxxxxxxxxxxxx/emoncms/input/post.json?node='+str(1)+'&json={'+data+'}&apikey=xxxxxxxxxxxxxx'
+		answer = urlopen(url)
+		#print(answer)
+
+	def setRelais0 (self):
+		#os.system('i2cset -y 1 0x24 0x15 0x10')  #set output-latch of GPB4 high
+		#os.system('i2cset -y 1 0x24 0x01 0xE0')  #set pins 0..4 of register B as output
+		os.system('i2cset -y 1 0x20 0x15 0xFE')
+		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
+
+	def resetRelais0 (self):
+		os.system('i2cset -y 1 0x20 0x15 0xFF')
+		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
 
 
 #########################
+hw = CtrlHardware()
 
-Relais = 0
-resetRelais0 ()
+SolarPumpRunning = False
+SwitchOnTime = 0
+
+hw.resetRelais0 ()
 
 while True:
-	T1 = readTemp(0)
-	T2 = readTemp(1)
-	T3 = readTemp(2)
-	T4 = readTemp(3)
-	T5 = readTemp(4)
-	T6 = readTemp(5)
-	T7 = readTemp(6)
-	T8 = readTemp(7)
-	T9 = readTemp(8)
-	T10 = readTemp(9)
-	T11 = readTemp(10)
+	T1 = hw.readTemp(0)
+	T2 = hw.readTemp(1)
+	T3 = hw.readTemp(2)
+	T4 = hw.readTemp(3)
+	T5 = hw.readTemp(4)
+	T6 = hw.readTemp(5)
+	T7 = hw.readTemp(6)
+	T8 = hw.readTemp(7)
+	T9 = hw.readTemp(8)
+	T10 = hw.readTemp(9)
+	T11 = hw.readTemp(10)
 	
 	TempLog = "T1:%2.1f,T2:%2.1f,T3:%2.1f,T4:%2.1f,T5:%2.1f,T6:%2.1f,T7:%2.1f,T8:%2.1f,T9:%2.1f,T10:%2.1f,T11:%2.1f" % (T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)
 	print ("T1 = %2.1f, T2 = %2.1f, T3 = %2.1f, T4 = %2.1f, T5 = %2.1f, T6 = %2.1f, T7 = %2.1f" % (T1, T2, T3, T4, T5, T6, T7))
 	print("T8 = %2.1f, T9 = %2.1f, T10 = %2.1f, T11 = %2.1f" % (T8, T9, T10, T11))
-	postData(TempLog, 1)
+	hw.postData(TempLog, 1)
 	#postDataRemoteServer(TempLog,27)
 
 	#mean-temperature:
@@ -97,18 +111,18 @@ while True:
 
 	if (StorageMeanTemp>81):  #activ cooling
 		SolarPumpRunning = True
-		setRelais0()
+		hw.setRelais0()
 		SwitchOnTime = 0
 	else:
 		if SolarPumpRunning:
 			SwitchOnTime += 30
 			if (T9>T8)and(SwitchOnTime>300):
 				SolarPumpRunning = False
-				resetRelais0()
+				hw.resetRelais0()
 				SwitchOnTime = 0
 		elif (T7 > (T6 + 4)):
 			SolarPumpRunning = True
-			setRelais0()
+			hw.setRelais0()
 
 	time.sleep (30)
 	
