@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import heating_ctrl_hw as hardware
+import time
 
 hw = hardware.CtrlHardware()
 
