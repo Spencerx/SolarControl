@@ -46,7 +46,7 @@ class CtrlHardware():
 		os.system('i2cset -y 1 0x20 0x01 0x00')  # set pins 0..7 of register B as output
 
 	def setOutput (self, output):
-		self._output = ~output
+		self._output = (~output + 256)
 		os.system('i2cset -y 1 0x20 0x15 ' + format(self._output, '#04x'))
 		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
@@ -54,7 +54,7 @@ class CtrlHardware():
 		if (state == 0):
 			self._output = self._output | (2**pin)
 		else:
-			self._output = self._output & (~(2**pin))
+			self._output = self._output & ((~(2**pin))+ 256)
 		os.system('i2cset -y 1 0x20 0x15 ' + format(self._output, '#04x'))
 		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
