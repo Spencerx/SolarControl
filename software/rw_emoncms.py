@@ -19,7 +19,7 @@ class EnergyMonitor():
 
 	def readHeatingTempSetpoint (self):
 		#rw_apikey = config['local_emon']['rw_apikey']
-		url = 'http://192.168.1.107/emoncms/feed/value.json?id=14&apikey=' + rw_apikey
+		url = 'http://localhost/emoncms/feed/value.json?id=14&apikey=' + rw_apikey
 
 		try:
 			sock = urlopen(url)
