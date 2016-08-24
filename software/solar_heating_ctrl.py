@@ -47,11 +47,22 @@ def freezeSolarHeatExchange ():
 #========================================
 
 
+SampleTime = 30
 
-
+#state-indicators for solar-control:
 SolarPumpRunning = False
 SwitchOnTime = 0
 
+#state-indicators for heating-control:
+HeatingPumpRunning = False
+HeatControlSampleTime = 300
+HeatingState = 0     # heating off
+DecreaseTempTime = 200
+IncreaseTempTime = 0
+
+
+
+#========================================
 hw.initOutputs()
 
 while True:
@@ -87,10 +98,10 @@ while True:
         #hw.setRelais0()
         runSolarPump()
         SwitchOnTime = 0
-        print("cooling")
+        print("solar-pump running (cooling/heating)")
     else:
         if SolarPumpRunning:
-            SwitchOnTime += 30
+            SwitchOnTime += SampleTime
             if (T9 > T8) and (SwitchOnTime > 300):
                 SolarPumpRunning = False
                 #hw.resetRelais0()
@@ -109,6 +120,53 @@ while True:
     # heating-control:
     # ========================================
 
-    emon.readHeatingTempSetpoint()
+    HeatTempSetpoint = emon.readHeatingTempSetpoint()
 
-    time.sleep(30)
+    if (HeatingState == 0):  #heating off: setpoint = 0, temperature-mixer to lowest position
+        HeatingPumpRunning = False
+        if (DecreaseTempTime == 0):
+            HeatingState = 1
+    elif (HeatingState == 1):  #heating idle: heating-system off, waiting for setpoint > 0
+        HeatingPumpRunning = False
+        if (HeatTempSetpoint > 0):
+            HeatingState = 2
+            ControlSampleTime = HeatControlSampleTime
+    elif (HeatingState == 2): #heating-control: setpoint > 0, pump running, closed-loop temperature control
+        HeatingPumpRunning = True
+        ControlSampleTime -= SampleTime
+        if (ControlSampleTime <= 0):
+            ControlSampleTime = HeatControlSampleTime
+            ControlError = HeatTempSetpoint - T10
+            if (ControlError > 4):
+                IncreaseTempTime = ControlError
+            elif (ControlError < 4):
+                DecreaseTempTime = ControlError
+        if (HeatTempSetpoint == 0):
+            HeatingState = 0
+            DecreaseTempTime = 200
+    else:
+        HeatingPumpRunning = False
+        DecreaseTempTime = 200
+        HeatingState = 0
+
+
+    if (HeatingPumpRunning):
+        runHeatingPump()
+    else:
+        stopHeatingPump()
+
+    if (DecreaseTempTime > 0):
+        DecreaseTempTime -= SampleTime
+        decreaseHeatingTemp()
+        IncreaseTempTime = 0
+    elif (IncreaseTempTime > 0):
+        IncreaseTempTime -= SampleTime
+        increaseHeatingTemp()
+        DecreaseTempTime = 0
+    else:
+        freezeHeatingTemp()
+        DecreaseTempTime = 0
+        IncreaseTempTime = 0
+
+    # ========================================
+    time.sleep(SampleTime)
