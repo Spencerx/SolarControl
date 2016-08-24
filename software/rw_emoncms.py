@@ -18,9 +18,8 @@ class EnergyMonitor():
 		#print(answer)
 
 	def readHeatingTempSetpoint (self):
-		#rw_apikey = config['local_emon']['rw_apikey']
+		rw_apikey = config['local_emon']['rw_apikey']
 		url = 'http://localhost/emoncms/feed/value.json?id=14&apikey=' + rw_apikey
-
 		try:
 			sock = urlopen(url)
 			data_str = sock.read()
@@ -28,7 +27,6 @@ class EnergyMonitor():
 		except:
 			print ("Error in reading emoncms data")
 			data_str = '0'
-
 		return float((data_str.decode("utf-8")).replace('"', ''))
 
 	def postDataRemoteServer (self, data, node):
