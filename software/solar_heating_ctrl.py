@@ -87,6 +87,7 @@ while True:
         #hw.setRelais0()
         runSolarPump()
         SwitchOnTime = 0
+        print("cooling")
     else:
         if SolarPumpRunning:
             SwitchOnTime += 30
@@ -100,6 +101,10 @@ while True:
             #hw.setRelais0()
             runSolarPump()
 
+    if (SolarPumpRunning):
+        print("solar-pump running")
+    else:
+        print("solar-pump idle")
     # ========================================
     # heating-control:
     # ========================================
