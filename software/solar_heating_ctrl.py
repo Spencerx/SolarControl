@@ -136,7 +136,7 @@ while True:
         HeatingPumpRunning = False
         if (HeatTempSetpoint > 0):
             HeatingState = 2
-            ControlSampleTime = HeatControlSampleTime
+            ControlSampleTime = 0  # start control immediately
     elif (HeatingState == 2): #heating-control: setpoint > 0, pump running, closed-loop temperature control
         HeatingPumpRunning = True
         ControlSampleTime -= SampleTime
@@ -146,7 +146,7 @@ while True:
             if (ControlError > 4):
                 IncreaseTempTime = ControlError
             elif (ControlError < 4):
-                DecreaseTempTime = ControlError
+                DecreaseTempTime = -ControlError
         if (HeatTempSetpoint == 0):
             HeatingState = 0
             DecreaseTempTime = 200
@@ -174,9 +174,10 @@ while True:
         DecreaseTempTime = 0
         IncreaseTempTime = 0
 
-    print ("HeatingState = %f", HeatingState)
-    print ("DecreaseTempTime = %f", DecreaseTempTime)
-    print ("IncreaseTempTime = %f", IncreaseTempTime)
-    print ("HeatControlError = %f", ControlError)
+    print ("HeatingState = ", HeatingState)
+    print ("DecreaseTempTime = ", DecreaseTempTime)
+    print ("IncreaseTempTime = ", IncreaseTempTime)
+    print ("HeatControlError = ", ControlError)
+    print ("ControlSampleTime = ", ControlSampleTime)
     # ========================================
     time.sleep(SampleTime)
