@@ -63,15 +63,5 @@ class CtrlHardware():
 		os.system('i2cset -y 1 0x20 0x15 ' + format(self._output, '#04x'))
 		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
-	def setRelais0 (self):
-		#os.system('i2cset -y 1 0x24 0x15 0x10')  #set output-latch of GPB4 high
-		#os.system('i2cset -y 1 0x24 0x01 0xE0')  #set pins 0..4 of register B as output
-		os.system('i2cset -y 1 0x20 0x15 0xFE')
-		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
-
-	def resetRelais0 (self):
-		os.system('i2cset -y 1 0x20 0x15 0xFF')
-		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..7 of register B as output
-
 
 	

@@ -109,6 +109,6 @@ while True:
     # heating-control:
     # ========================================
 
-    emon.readHeatingTempSetpoint()
+    #emon.readHeatingTempSetpoint()  #delay for reading at reboot?
 
     time.sleep(30)
