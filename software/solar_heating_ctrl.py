@@ -168,5 +168,9 @@ while True:
         DecreaseTempTime = 0
         IncreaseTempTime = 0
 
+    print ("HeatingState = %f", HeatingState)
+    print ("DecreaseTempTime = %f", DecreaseTempTime)
+    print ("IncreaseTempTime = %f", IncreaseTempTime)
+    print ("HeatControlError = %f", ControlError)
     # ========================================
     time.sleep(SampleTime)
