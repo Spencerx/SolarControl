@@ -80,6 +80,7 @@ while True:
     # ========================================
     # mean-temperature:
     StorageMeanTemp = (T1 * 30 + T2 * 5 + T3 * 5 + T4 * 10 + T5 * 20 + T6 * 30) / 100
+    print("StorageMeanTemp = %2.1f" % StorageMeanTemp)
 
     if (StorageMeanTemp > 80):  # activ cooling
         SolarPumpRunning = True
