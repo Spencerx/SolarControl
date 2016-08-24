@@ -24,10 +24,9 @@ class EnergyMonitor():
 			sock = urlopen(url)
 			data_str = sock.read()
 			sock.close
+			return float((data_str.decode("utf-8")).replace('"', ''))
 		except:
-			print ("Error in reading emoncms data")
-			data_str = '0'
-		return float((data_str.decode("utf-8")).replace('"', ''))
+			return 0.0
 
 	def postDataRemoteServer (self, data, node):
 		url = 'xxxxxxxxxxxxxxx/emoncms/input/post.json?node='+str(1)+'&json={'+data+'}&apikey=xxxxxxxxxxxxxx'
