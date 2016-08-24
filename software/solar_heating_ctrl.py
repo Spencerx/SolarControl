@@ -61,7 +61,8 @@ HeatControlSampleTime = 300
 HeatingState = 0     # heating off
 DecreaseTempTime = 200
 IncreaseTempTime = 0
-
+ControlSampleTime = HeatControlSampleTime
+ControlError = 0
 
 
 #========================================
