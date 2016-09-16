@@ -83,45 +83,47 @@ while True:
 
     TempLog = "T1:%2.1f,T2:%2.1f,T3:%2.1f,T4:%2.1f,T5:%2.1f,T6:%2.1f,T7:%2.1f,T8:%2.1f,T9:%2.1f,T10:%2.1f,T11:%2.1f" % (
     T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)
-    print("T1 = %2.1f, T2 = %2.1f, T3 = %2.1f, T4 = %2.1f, T5 = %2.1f, T6 = %2.1f, T7 = %2.1f" % (
+    #print("T1 = %2.1f, T2 = %2.1f, T3 = %2.1f, T4 = %2.1f, T5 = %2.1f, T6 = %2.1f, T7 = %2.1f" % (
     T1, T2, T3, T4, T5, T6, T7))
-    print("T8 = %2.1f, T9 = %2.1f, T10 = %2.1f, T11 = %2.1f" % (T8, T9, T10, T11))
+    #print("T8 = %2.1f, T9 = %2.1f, T10 = %2.1f, T11 = %2.1f" % (T8, T9, T10, T11))
+
+    # mean-temperature:
+    StorageMeanTemp = (T1 * 30 + T2 * 5 + T3 * 5 + T4 * 10 + T5 * 20 + T6 * 30) / 100
+    #print("StorageMeanTemp = %2.1f" % StorageMeanTemp)
+    StorageMeanTempLog = "StorageMeanTemp:%2.1f" % (StorageMeanTemp)
+
     PostDataTime -= SampleTime
     if (PostDataTime<=0):
         PostDataTime = 30
         emon.postData(TempLog, 1)
+        emon.postData(StorageMeanTempLog, 1)
     # postDataRemoteServer(TempLog,27)
 
     # ========================================
     # solar-control:
     # ========================================
-    # mean-temperature:
-    StorageMeanTemp = (T1 * 30 + T2 * 5 + T3 * 5 + T4 * 10 + T5 * 20 + T6 * 30) / 100
-    print("StorageMeanTemp = %2.1f" % StorageMeanTemp)
+
 
     if (StorageMeanTemp > 80):  # activ cooling
         SolarPumpRunning = True
-        #hw.setRelais0()
         runSolarPump()
         SwitchOnTime = 0
-        print("solar-pump running (cooling/heating)")
+        #print("solar-pump running (cooling/heating)")
     else:
         if SolarPumpRunning:
             SwitchOnTime += SampleTime
             if (T9 > T8) and (SwitchOnTime > 300):
                 SolarPumpRunning = False
-                #hw.resetRelais0()
                 stopSolarPump()
                 SwitchOnTime = 0
         elif (T7 > (T6 + 4)):
             SolarPumpRunning = True
-            #hw.setRelais0()
             runSolarPump()
 
     if (SolarPumpRunning):
-        print("solar-pump running")
+        #print("solar-pump running")
     else:
-        print("solar-pump idle")
+        #print("solar-pump idle")
     # ========================================
     # heating-control:
     # ========================================
@@ -143,10 +145,10 @@ while True:
         if (ControlSampleTime <= 0):
             ControlSampleTime = HeatControlSampleTime
             ControlError = HeatTempSetpoint - T10
-            if (ControlError > 4):
-                IncreaseTempTime = ControlError
-            elif (ControlError < 4):
-                DecreaseTempTime = -ControlError
+            if (ControlError > 3):
+                IncreaseTempTime = ControlError/3
+            elif (ControlError < 3):
+                DecreaseTempTime = -ControlError/2
         if (HeatTempSetpoint == 0):
             HeatingState = 0
             DecreaseTempTime = 200
@@ -174,10 +176,10 @@ while True:
         DecreaseTempTime = 0
         IncreaseTempTime = 0
 
-    print ("HeatingState = ", HeatingState)
-    print ("DecreaseTempTime = ", DecreaseTempTime)
-    print ("IncreaseTempTime = ", IncreaseTempTime)
-    print ("HeatControlError = ", ControlError)
-    print ("ControlSampleTime = ", ControlSampleTime)
+    #print ("HeatingState = ", HeatingState)
+    #print ("DecreaseTempTime = ", DecreaseTempTime)
+    #print ("IncreaseTempTime = ", IncreaseTempTime)
+    #print ("HeatControlError = ", ControlError)
+    #print ("ControlSampleTime = ", ControlSampleTime)
     # ========================================
     time.sleep(SampleTime)
