@@ -33,7 +33,7 @@ class CtrlHardware():
 			os.system('i2cset -y 1 0x24 0x15 '+mux_byte)
 		#set pins 0..4 of register B as output
 		os.system('i2cset -y 1 0x24 0x01 0xE0')
-		time.sleep (0.1)
+		time.sleep (0.2)
 		adc_result = self.spi.xfer([0x01, 0x80, 0x00])
 		value = 256*adc_result[1] + adc_result[2]
 		Temp = 100.0*(value - adc_0degrees)/(adc_100degrees - adc_0degrees)
