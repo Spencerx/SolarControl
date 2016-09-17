@@ -119,9 +119,9 @@ while True:
             SolarPumpRunning = True
             runSolarPump()
 
-    if (SolarPumpRunning):
+    #if (SolarPumpRunning):
         #print("solar-pump running")
-    else:
+    #else:
         #print("solar-pump idle")
     # ========================================
     # heating-control:
