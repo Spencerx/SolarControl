@@ -54,6 +54,9 @@ PostDataTime = 30
 #state-indicators for solar-control:
 SolarPumpRunning = False
 SwitchOnTime = 0
+HeatExchangerState = 0   # 0=low heat-exchanger, 1=full heat-exchanger
+ChangeToFullExchangerTime = 0
+ChangeToLowExchangerTime = 0
 
 #state-indicators for heating-control:
 HeatingPumpRunning = False
@@ -122,15 +125,35 @@ while True:
             SolarPumpRunning = True
             runSolarPump()
 
-    #if (SolarPumpRunning):
-        #print("solar-pump running")
-    #else:
-        #print("solar-pump idle")
+    # heat exchanger control:
+    if (HeatExchangerState==0 and (T8>(T2+6)) and ChangeToLowExchangerTime==0):
+        HeatExchangerState = 1
+        ChangeToFullExchangerTime = 200
+    elif (HeatExchangerState==1 and (T8<T2) and ChangeToFullExchangerTime==0):
+        HeatExchangerState = 0
+        ChangeToLowExchangerTime = 200
+
+    if (ChangeToFullExchangerTime > 0):
+        changeToFullSolarHeatExchange()
+        ChangeToFullExchangerTime -= SampleTime
+        ChangeToLowExchangerTime = 0
+    elif (ChangeToLowExchangerTime > 0):
+        changeToLowSolarHeatExchange()
+        ChangeToLowExchangerTime -= SampleTime
+        ChangeToFullExchangerTime = 0
+    else:
+        freezeSolarHeatExchange()
+        ChangeToLowExchangerTime = 0
+        ChangeToFullExchangerTime = 0
+
     # ========================================
     # heating-control:
     # ========================================
 
-    HeatTempSetpoint = emon.readHeatingTempSetpoint()
+    if SolarPumpRunning:
+        HeatTempSetpoint = 0
+    else:
+        HeatTempSetpoint = emon.readHeatingTempSetpoint()
 
     if (HeatingState == 0):  #heating off: setpoint = 0, temperature-mixer to lowest position
         HeatingPumpRunning = False
