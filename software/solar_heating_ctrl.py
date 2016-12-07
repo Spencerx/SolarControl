@@ -126,10 +126,10 @@ while True:
             runSolarPump()
 
     # heat exchanger control:
-    if (HeatExchangerState==0 and (T8>(T2+6)) and ChangeToLowExchangerTime==0):
+    if (HeatExchangerState==0 and (T8>(T3+3)) and ChangeToLowExchangerTime==0):
         HeatExchangerState = 1
         ChangeToFullExchangerTime = 200
-    elif (HeatExchangerState==1 and (T8<T2) and ChangeToFullExchangerTime==0):
+    elif (HeatExchangerState==1 and (T8<T3) and ChangeToFullExchangerTime==0):
         HeatExchangerState = 0
         ChangeToLowExchangerTime = 200
 
