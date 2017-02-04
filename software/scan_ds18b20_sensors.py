@@ -2,10 +2,19 @@
 
 from w1thermsensor import W1ThermSensor
 from time import *
+import configparser
+from urllib.request import urlopen
+
+config = configparser.ConfigParser()
+try:
+	config.read('/home/pi/Documents/config.txt')
+except:
+	print("configuration-file not found!\n")
 
 
 def postData(data, node):
-    url = 'http://localhost/emoncms/input/post.json?node=' + str(node) + '&json={' + data + '}
+    rw_apikey = config['local_emon']['rw_apikey']
+    url = 'http://localhost/emoncms/input/post.json?node=' + str(node) + '&json={' + data + '}&apikey='+rw_apikey
     answer = urlopen(url)
 
 Sensors = W1ThermSensor.get_available_sensors()
