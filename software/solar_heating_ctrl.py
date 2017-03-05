@@ -44,6 +44,12 @@ def freezeSolarHeatExchange ():
     hw.changeOutput(pin=4, state=0)
     hw.changeOutput(pin=5, state=0)
 
+def runChargingPump ():
+    hw.changeOutput(pin=6, state=1)
+
+def stopChargingPump ():
+    hw.changeOutput(pin=6, state=0)
+
 #========================================
 
 
@@ -67,6 +73,8 @@ IncreaseTempTime = 0
 ControlSampleTime = HeatControlSampleTime
 ControlError = 0
 
+#state-indicators for charging-control:
+ChargingPumpRunning = False
 
 #========================================
 hw.initOutputs()
@@ -107,8 +115,6 @@ while True:
     # ========================================
     # solar-control:
     # ========================================
-
-
     if (StorageMeanTemp > 80):  # activ cooling
         SolarPumpRunning = True
         runSolarPump()
@@ -125,7 +131,9 @@ while True:
             SolarPumpRunning = True
             runSolarPump()
 
+    # ========================================
     # heat exchanger control:
+    # ========================================
     if (HeatExchangerState==0 and (T8>(T3+3)) and ChangeToLowExchangerTime==0):
         HeatExchangerState = 1
         ChangeToFullExchangerTime = 200
@@ -200,6 +208,21 @@ while True:
         freezeHeatingTemp()
         DecreaseTempTime = 0
         IncreaseTempTime = 0
+
+    # ========================================
+    # charging-control (oil):
+    # ========================================
+    if (HeatTempSetpoint > (T2+5)):
+        ChargingPumpRunning = True
+    if (T4 > (HeatTempSetpoint+3)):
+        ChargingPumpRunning = False
+    if SolarPumpRunning:
+        ChargingPumpRunning = False
+
+    if ChargingPumpRunning:
+        runChargingPump()
+    else:
+        stopChargingPump()
 
     #print ("HeatingState = ", HeatingState)
     #print ("DecreaseTempTime = ", DecreaseTempTime)
