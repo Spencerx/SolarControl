@@ -91,12 +91,14 @@ while True:
     T9 = hw.readTemp(8)
     T10 = hw.readTemp(9)
     T11 = hw.readTemp(10)
+    T15 = hw.readTemp(14)
+    T16 = hw.readTemp(15)
 
     ReadTime = 2.2 #0.2 seconds for each read
     # TODO: split sampling and reading
 
-    TempLog = "T1:%2.1f,T2:%2.1f,T3:%2.1f,T4:%2.1f,T5:%2.1f,T6:%2.1f,T7:%2.1f,T8:%2.1f,T9:%2.1f,T10:%2.1f,T11:%2.1f" % (
-    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11)
+    TempLog = "T1:%2.1f,T2:%2.1f,T3:%2.1f,T4:%2.1f,T5:%2.1f,T6:%2.1f,T7:%2.1f,T8:%2.1f,T9:%2.1f,T10:%2.1f,T11:%2.1f,T15:%2.1f,T16:%2.1f" % (
+    T1, T2, T3, T4, T5, T6, T7, T8, T9, T10, T11, T15, T16)
     #print("T1 = %2.1f, T2 = %2.1f, T3 = %2.1f, T4 = %2.1f, T5 = %2.1f, T6 = %2.1f, T7 = %2.1f" % (T1, T2, T3, T4, T5, T6, T7))
     #print("T8 = %2.1f, T9 = %2.1f, T10 = %2.1f, T11 = %2.1f" % (T8, T9, T10, T11))
 
