@@ -117,7 +117,7 @@ while True:
     # ========================================
     # solar-control:
     # ========================================
-    if (StorageMeanTemp > 85):  # activ cooling
+    if (StorageMeanTemp > 80):  # activ cooling
         SolarPumpRunning = True
         runSolarPump()
         SwitchOnTime = 0
