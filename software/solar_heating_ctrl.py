@@ -76,6 +76,8 @@ ControlError = 0
 #state-indicators for charging-control:
 ChargingPumpRunning = False
 
+SummerHeatExchangerControl = True
+
 #========================================
 hw.initOutputs()
 
@@ -160,7 +162,7 @@ while True:
     # heating-control:
     # ========================================
 
-    if SolarPumpRunning:
+    if SolarPumpRunning and not SummerHeatExchangerControl:
         HeatTempSetpoint = 0
     else:
         HeatTempSetpoint = emon.readHeatingTempSetpoint()
