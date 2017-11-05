@@ -88,7 +88,7 @@ ChargingPumpRunning = False
 #========================================
 try:
     hw.initOutputs()
-    hw.initHeatingMassFlowPulseCounter()
+    #hw.initHeatingMassFlowPulseCounter()
 
     while True:
         T1 = hw.readTemp(0)
