@@ -6,6 +6,7 @@ import time
 
 hw = hardware.CtrlHardware()
 emon = emoncms.EnergyMonitor()
+actual_UTC_time = time.localtime()
 
 # hardware allocation:
 def runSolarPump ():
@@ -64,6 +65,14 @@ HeatExchangerState = 0   # 0=low heat-exchanger, 1=full heat-exchanger
 ChangeToFullExchangerTime = 0
 ChangeToLowExchangerTime = 0
 
+# mode-indicators for heating control
+HeatingOff              = 0
+HeatingWithNightSetback = 1
+FixedHeatingTempSetpoint = 2
+LivingRoomTempCtrlWithNightSetback = 3
+
+HeatingMode = HeatingWithNightSetback
+
 #state-indicators for heating-control:
 HeatingPumpRunning = False
 HeatControlSampleTime = 300
@@ -75,8 +84,6 @@ ControlError = 0
 
 #state-indicators for charging-control:
 ChargingPumpRunning = False
-
-SummerHeatExchangerControl = True
 
 #========================================
 hw.initOutputs()
@@ -162,11 +169,26 @@ while True:
     # heating-control:
     # ========================================
 
-    if SolarPumpRunning and not SummerHeatExchangerControl:
+    # set heating temperature
+    if (HeatingMode == HeatingOff):
         HeatTempSetpoint = 0
-    else:
+    elif (HeatingMode == HeatingWithNightSetback):
+        if (actual_UTC_time.tm_hour >= 20):
+            HeatTempSetpoint = 30
+        elif (actual_UTC_time.tm_hour >= 6):
+            HeatTempSetpoint = emon.readHeatingTempSetpoint()
+        elif (actual_UTC_time.tm_hour >= 4):
+            HeatTempSetpoint = emon.readHeatingTempSetpoint() + 10
+        else:
+            HeatTempSetpoint = 30
+    elif (HeatingMode == FixedHeatingTempSetpoint):
         HeatTempSetpoint = emon.readHeatingTempSetpoint()
+    elif (HeatingMode == LivingRoomTempCtrlWithNightSetback):
+        HeatTempSetpoint = emon.readHeatingTempSetpoint()
+    else:
+        HeatTempSetpoint = 0
 
+    #----------------------------------------------------------
     if (HeatingState == 0):  #heating off: setpoint = 0, temperature-mixer to lowest position
         HeatingPumpRunning = False
         if (DecreaseTempTime == 0):
