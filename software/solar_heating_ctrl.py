@@ -88,7 +88,7 @@ ChargingPumpRunning = False
 #========================================
 try:
     hw.initOutputs()
-    #hw.initHeatingMassFlowPulseCounter()
+    hw.initHeatingMassFlowPulseCounter()
 
     while True:
         T1 = hw.readTemp(0)
@@ -118,11 +118,15 @@ try:
         #print("StorageMeanTemp = %2.1f" % StorageMeanTemp)
         StorageMeanTempLog = "StorageMeanTemp:%2.1f" % (StorageMeanTemp)
 
+        # heating-massflow-pulse:
+        HeatingMassFlowPulseLog = "HeatingMassFlowPulse:%2.1f" % (hw.getHeatingMassFlowPulseCounter())
+
         PostDataTime -= SampleTime
         if (PostDataTime<=0):
             PostDataTime = 30
             emon.postData(TempLog, 1)
             emon.postData(StorageMeanTempLog, 1)
+            emon.postData(HeatingMassFlowPulseLog, 1)
         # postDataRemoteServer(TempLog,27)
 
         # ========================================

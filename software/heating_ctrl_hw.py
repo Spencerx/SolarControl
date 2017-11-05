@@ -83,12 +83,12 @@ class CtrlHardware():
 		gpio.setmode(gpio.BOARD)
 		gpio.setup(16, gpio.IN)
 
-		def incrementHeatingMassFlowPulseCounter ():  # callback-function
+		def incrementHeatingMassFlowPulseCounter ( pin ):  # callback-function
 			global HeatingMassFlowPulseCounter
 			HeatingMassFlowPulseCounter = HeatingMassFlowPulseCounter+1
 			print(HeatingMassFlowPulseCounter)
 
-		gpio.add_event_detect(16, gpio.FALLING)
+		gpio.add_event_detect(16, gpio.FALLING, bouncetime = 100)
 		gpio.add_event_callback(16, incrementHeatingMassFlowPulseCounter)
 
 	def getHeatingMassFlowPulseCounter (self):
