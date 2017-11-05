@@ -6,7 +6,7 @@ import time
 
 hw = hardware.CtrlHardware()
 emon = emoncms.EnergyMonitor()
-actual_UTC_time = time.localtime()
+
 
 # hardware allocation:
 def runSolarPump ():
@@ -174,7 +174,7 @@ try:
         # ========================================
         # heating-control:
         # ========================================
-
+		actual_UTC_time = time.localtime()
         # set heating temperature
         if (HeatingMode == HeatingOff):
             HeatTempSetpoint = 0
