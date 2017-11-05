@@ -174,7 +174,7 @@ try:
         # ========================================
         # heating-control:
         # ========================================
-		actual_UTC_time = time.localtime()
+        actual_UTC_time = time.localtime()
         # set heating temperature
         if (HeatingMode == HeatingOff):
             HeatTempSetpoint = 0
