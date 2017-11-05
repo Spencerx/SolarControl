@@ -3,6 +3,7 @@
 import os
 import spidev
 import time
+import RPi.GPIO as gpio
 
 #import configparser
 
@@ -14,6 +15,8 @@ import time
 
 adc_0degrees = 213
 adc_100degrees = 645
+
+HeatingMassFlowPulseCounter = 0
 
 
 class CtrlHardware():
@@ -64,4 +67,32 @@ class CtrlHardware():
 		os.system('i2cset -y 1 0x20 0x01 0x00')  #set pins 0..4 of register B as output
 
 
-	
+	# def initPWM (self, pin, freq):
+	# 	gpio.setmode(gpio.BOARD)
+	# 	gpio.setup(pin, gpio.OUT)
+	# 	pwm = gpio.PWM(pin, freq)
+	# 	return pwm
+    #
+	# def setPWM (self, PWM, duty):
+	# 	PWM.start(duty)
+    #
+	# def stopPWM (self, PWM):
+	# 	PWM.stop()
+
+	def initHeatingMassFlowPulseCounter (self):
+		gpio.setmode(gpio.BOARD)
+		gpio.setup(16, gpio.IN)
+
+		def incrementHeatingMassFlowPulseCounter ():  # callback-function
+			global HeatingMassFlowPulseCounter
+			HeatingMassFlowPulseCounter = HeatingMassFlowPulseCounter+1
+			print(HeatingMassFlowPulseCounter)
+
+		gpio.add_event_detect(16, gpio.FALLING)
+		gpio.add_event_callback(16, incrementHeatingMassFlowPulseCounter)
+
+	def getHeatingMassFlowPulseCounter (self):
+		return HeatingMassFlowPulseCounter
+
+	def cleanupGPIO (self):
+		gpio.cleanup()
