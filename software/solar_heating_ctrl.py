@@ -181,9 +181,9 @@ try:
         elif (HeatingMode == HeatingWithNightSetback):
             if (actual_UTC_time.tm_hour >= 20):
                 HeatTempSetpoint = 30
-            elif (actual_UTC_time.tm_hour >= 5):
+            elif (actual_UTC_time.tm_hour >= 6):
                 HeatTempSetpoint = emon.readHeatingTempSetpoint()
-            elif (actual_UTC_time.tm_hour >= 3):
+            elif (actual_UTC_time.tm_hour >= 2):
                 HeatTempSetpoint = emon.readHeatingTempSetpoint() + 10
             else:
                 HeatTempSetpoint = 30
