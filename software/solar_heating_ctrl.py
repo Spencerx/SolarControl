@@ -71,7 +71,7 @@ HeatingWithNightSetback = 1
 FixedHeatingTempSetpoint = 2
 LivingRoomTempCtrlWithNightSetback = 3
 
-HeatingMode = HeatingWithNightSetback
+HeatingMode = FixedHeatingTempSetpoint
 
 #state-indicators for heating-control:
 HeatingPumpRunning = False
