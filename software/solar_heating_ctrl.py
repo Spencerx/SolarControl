@@ -51,6 +51,12 @@ def runChargingPump ():
 def stopChargingPump ():
     hw.changeOutput(pin=6, state=0)
 
+def runWoodChargingPump ():
+    hw.changeOutput(pin=7, state=1)
+
+def stopWoodChargingPump ():
+    hw.changeOutput(pin=7, state=0)
+
 #========================================
 
 
@@ -84,6 +90,8 @@ ControlError = 0
 
 #state-indicators for charging-control:
 ChargingPumpRunning = False
+WoodChargingPumpRunning = False
+
 
 #========================================
 try:
@@ -255,6 +263,22 @@ try:
             runChargingPump()
         else:
             stopChargingPump()
+
+        # ========================================
+        # charging-control (wood):
+        # ========================================
+        if (T16 > (T3+4)):
+            WoodChargingPumpRunning = True
+        if (T16 < T3):
+            WoodChargingPumpRunning = False
+        if (T16 > 75):
+            WoodChargingPumpRunning = True
+
+        if WoodChargingPumpRunning:
+            runWoodChargingPump()  # Option B
+
+        else:
+            stopWoodChargingPump() # Option B
 
         #print ("HeatingState = ", HeatingState)
         #print ("DecreaseTempTime = ", DecreaseTempTime)
