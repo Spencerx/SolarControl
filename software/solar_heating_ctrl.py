@@ -105,8 +105,7 @@ try:
         T4 = hw.readTemp(3)
         T5 = hw.readTemp(4)
         T6 = hw.readTemp(5)
-        # T7 = hw.readTemp(6)
-	T7 = 0  # temporary sensor value
+        T7 = hw.readTemp(6)
         T8 = hw.readTemp(7)
         T9 = hw.readTemp(8)
         T10 = hw.readTemp(9)
