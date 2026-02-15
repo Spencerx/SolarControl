@@ -77,6 +77,7 @@ HeatingWithNightSetback = 1
 FixedHeatingTempSetpoint = 2
 LivingRoomTempCtrlWithNightSetback = 3
 
+#HeatingMode = HeatingOff
 HeatingMode = FixedHeatingTempSetpoint
 
 #state-indicators for heating-control:
@@ -140,7 +141,7 @@ try:
         # ========================================
         # solar-control:
         # ========================================
-        if (StorageMeanTemp > 80):  # activ cooling
+        if (StorageMeanTemp > 100):  # activ cooling #normalerweise 80
             SolarPumpRunning = True
             runSolarPump()
             SwitchOnTime = 0
@@ -194,9 +195,9 @@ try:
             elif (actual_UTC_time.tm_hour >= 2):
                 HeatTempSetpoint = emon.readHeatingTempSetpoint() + 10
             else:
-                HeatTempSetpoint = 30
+                HeatTempSetpoint = 35
         elif (HeatingMode == FixedHeatingTempSetpoint):
-            HeatTempSetpoint = emon.readHeatingTempSetpoint()
+            HeatTempSetpoint = 45
         elif (HeatingMode == LivingRoomTempCtrlWithNightSetback):
             HeatTempSetpoint = emon.readHeatingTempSetpoint()
         else:
